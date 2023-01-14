@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- mariadb/sealedsecret.yml
+- mariadb/pvc.yml
+- mariadb/deployment.yml
+- mariadb/service.yml
+
+- vaultwarden/configmap.yml
+- vaultwarden/pvc.yml
+- vaultwarden/deployment.yml
+- vaultwarden/service.yml
+- vaultwarden/ingress.yml
+
+namespace: vaultwarden

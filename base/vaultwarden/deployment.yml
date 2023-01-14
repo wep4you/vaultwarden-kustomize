@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+  labels:
+    app: vaultwarden
+spec:
+  selector:
+    matchLabels:
+      app: vaultwarden
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: vaultwarden
+    spec:
+      containers:
+        - image: vaultwarden/server:latest
+          name: vaultwarden
+          env:
+            - name: MYSQLUSER
+              value: "vaultwarden"
+            - name: MYSQLPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb
+                  key: mariadb-password
+            - name: MYSQLDATABASE
+              value: "vaultwarden_vault"
+            - name: MYSQLSERVER
+              value: "mariadb"
+          ports:
+            - containerPort: 3001
+              name: vaultwarden
+          volumeMounts:
+            - name: vaultwarden-persistent-storage
+              mountPath: /data
+            - name: vaultwarden-config
+              mountPath: /.env
+              subPath: .env
+          resources:
+            limits:
+              cpu: '150'
+              memory: '250Mi'
+            requests:
+              cpu: '50m'
+              memory: '100Mi'
+      volumes:
+        - name: vaultwarden-persistent-storage
+          persistentVolumeClaim:
+            claimName: vaultwarden-pvc
+        - name: vaultwarden-config
+          configMap:
+            name: vaultwarden-config

@@ -1,0 +1,16 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: mariadb
+  namespace: vaultwarden
+  labels:
+    app: mariadb
+spec:
+  ports:
+    - name: mariadb
+      protocol: TCP
+      port: 3306
+      targetPort: 3306
+  selector:
+    app: mariadb
+  type: ClusterIP
